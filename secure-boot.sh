@@ -7,7 +7,7 @@ echo "Regenerating grub Config"
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 echo "Installing sbctl"
 sudo pacman -S --noconfirm sbctl
-if sbctl status | grep -q "Setup Mode:	✓ Disabled"; then
+if sbctl status | grep "Setup Mode" | grep -q "Disabled"; then
     echo "Secure Boot is not in setup mode, Cannot continue further"
     exit 0
 fi
@@ -17,7 +17,7 @@ echo "enrolling keys including microsoft's.
 sudo sbctl enroll-keys -m
 echo "Signing Required Keys"
 sudo sbctl verify | grep "not signed" | awk '{print $2}' | while read file; do sudo sbctl sign -s $file; done
-if sbctl status | grep -q "Secure Boot:	✓ Enabled"; then
+if sbctl status | grep "Secure Boot" | grep -q "Enabled"; then
     echo "Secure Boot is now enabled."
 else
     echo "an error has occured."
